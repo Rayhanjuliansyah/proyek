@@ -20,11 +20,13 @@ function App() {
   const handleBook = (ustadId: string) => {
     setSelectedUstadId(ustadId);
     setShowBooking(true);
+    setShowChat(false); // Close chat window when opening booking form
   };
 
   const handleChat = (ustadId: string) => {
     setSelectedUstadId(ustadId);
     setShowChat(true);
+    setShowBooking(false); // Close booking window when opening chat
   };
 
   const handleSendMessage = (content: string) => {
@@ -40,12 +42,13 @@ function App() {
 
   const handleBookingSubmit = (booking: { date: string; sessionType: 'online' | 'in-person' }) => {
     console.log('Booking submitted:', { ustadId: selectedUstadId, ...booking });
-    setShowBooking(false);
+    setShowBooking(false); // Close the booking form after submission
+    setCurrentPage('bookings'); // Optionally navigate to booking list after submitting
   };
 
   const handleNavigate = (path: string) => {
     setCurrentPage(path);
-    // Close chat and booking windows when navigating
+    // Close chat and booking windows when navigating to a new page
     setShowChat(false);
     setShowBooking(false);
   };
@@ -75,6 +78,8 @@ function App() {
         <div className="flex-1">
           {renderPage()}
         </div>
+
+        {/* Render Chat Window if showChat is true */}
         {showChat && selectedUstadId && (
           <div className="w-96">
             <ChatWindow
@@ -86,9 +91,10 @@ function App() {
         )}
       </div>
 
-      {showBooking && (
+      {/* Render Booking Form if showBooking is true */}
+      {showBooking && selectedUstadId && (
         <BookingForm
-          ustadId={selectedUstadId!}
+          ustadId={selectedUstadId}
           onSubmit={handleBookingSubmit}
           onClose={() => setShowBooking(false)}
         />
