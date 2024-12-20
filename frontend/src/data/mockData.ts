@@ -1,0 +1,36 @@
+
+export const ustads = [
+  {
+    id: '1',
+    name: 'Ustad A',
+    phone: '08123456789',
+    specialization: 'Fiqh',
+    description: 'Expert in Islamic jurisprudence.',
+    imageUrl: 'https://via.placeholder.com/150',
+    rating: 4.8,
+    expertise: ['Fiqh', 'Hadith'],
+    hourlyRate: 50,
+  },
+  {
+    id: '2',
+    name: 'Ustad B',
+    phone: '08234567890',
+    specialization: 'Aqidah',
+    description: 'Specialist in Aqidah studies.',
+    imageUrl: 'https://via.placeholder.com/150',
+    rating: 4.6,
+    expertise: ['Aqidah', 'Tafsir'],
+    hourlyRate: 45,
+  },
+  {
+    id: '3',
+    name: 'Ustad C',
+    phone: '08234567890',
+    specialization: 'Aqidah',
+    description: 'Specialist in Aqidah studies.',
+    imageUrl: 'https://via.placeholder.com/150',
+    rating: 4.6,
+    expertise: ['Aqidah', 'Tafsir'],
+    hourlyRate: 45,
+  },
+];
