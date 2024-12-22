@@ -26,7 +26,7 @@ const getUserById = async (req, res) => {
                 id: parseInt(userId),
             },
             include: {
-                UserProfile: true,
+                userProfile: true,
             },
         });
 

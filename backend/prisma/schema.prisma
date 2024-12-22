@@ -21,9 +21,9 @@ model User {
   isActive Boolean @default(true)
 
   role        userRole      @default(user)
-  Ustad       Ustad[]
-  Booking     Booking[]
-  UserProfile UserProfile[]
+  ustad       Ustad[]
+  booking     Booking[]
+  userProfile UserProfile[]
 
   @@map("user")
 }
@@ -35,14 +35,13 @@ enum userRole {
 }
 
 model UserProfile {
-  id        Int       @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   userId    Int
   firstName String
   lastName  String?
   phone     String
   imageUrl  String?
-  isActive  Boolean   @default(true)
-  Booking   Booking[]
+  isActive  Boolean @default(true)
 
   user User @relation(fields: [userId], references: [id])
 
@@ -59,7 +58,7 @@ model Ustad {
   userId       Int
 
   user    User      @relation(fields: [userId], references: [id])
-  Booking Booking[]
+  booking Booking[]
 
   @@map("ustad")
 }
@@ -75,10 +74,8 @@ model Booking {
   price       Float
   status      bookingStatus @default(pending)
 
-  user          User         @relation(fields: [userId], references: [id])
-  Ustad         Ustad        @relation(fields: [ustadId], references: [id])
-  UserProfile   UserProfile? @relation(fields: [userProfileId], references: [id])
-  userProfileId Int?
+  user  User  @relation(fields: [userId], references: [id])
+  ustad Ustad @relation(fields: [ustadId], references: [id])
 
   @@map("booking")
 }

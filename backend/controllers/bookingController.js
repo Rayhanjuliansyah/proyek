@@ -22,6 +22,10 @@ const getBookingById = async (req, res) => {
         const booking = await prisma.booking.findUnique({
             where: {
                 id: parseInt(bookingId),
+            },
+            include: {
+                user: true,
+                ustad: true
             }
         });
         res.status(200).json({
@@ -34,6 +38,8 @@ const getBookingById = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+// const getBookingByuserId = async (req, res) => {
 
 const createBooking = async (req, res) => {
     const { userId, ustadId, duration, eventDate, location, price } = req.body;

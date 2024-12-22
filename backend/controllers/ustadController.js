@@ -34,7 +34,15 @@ const getUstadById = async (req, res) => {
         const ustad = await prisma.ustad.findUnique({
             where: {
                 id: parseInt(ustadId),
-            }
+            },
+            include: {
+                user: {
+                    include: {
+                        userProfile: true,
+                    }
+                }
+
+            },
         });
         res.status(200).json({
             status: 'success',
