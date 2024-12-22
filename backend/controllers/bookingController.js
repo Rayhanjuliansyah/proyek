@@ -1,5 +1,4 @@
 const { PrismaClient } = require('@prisma/client');
-const { parse } = require('dotenv');
 const prisma = new PrismaClient();
 
 const getAllBookings = async (req, res) => {
@@ -61,7 +60,58 @@ const createBooking = async (req, res) => {
     }
 };
 
+const updateBooking = async (req, res) => {
+    const bookingId = req.params.id;
+    const { userId, ustadId, duration, eventDate, location, price } = req.body;
+    try {
+        const booking = await prisma.booking.update({
+            where: {
+                id: parseInt(bookingId),
+            },
+            data: {
+                userId: parseInt(userId),
+                ustadId: parseInt(ustadId),
+                duration: duration,
+                eventDate: eventDate,
+                location: location,
+                price: price
+            }
+        });
+        res.status(200).json({
+            status: 'success',
+            message: 'Booking updated successfully',
+            data: booking
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+const deleteBooking = async (req, res) => {
+    const bookingId = req.params.id;
+    try {
+        const booking = await prisma.booking.delete({
+            where: {
+                id: parseInt(bookingId),
+            }
+        });
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Booking deleted successfully'
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 
 module.exports = {
-    getAllBookings
+    getAllBookings,
+    getBookingById,
+    createBooking,
+    updateBooking,
+    deleteBooking
 };

@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const bcrypt = require('bcrypt');
 
 async function main() {
 
@@ -12,18 +13,18 @@ async function main() {
     await prisma.$queryRaw`ALTER SEQUENCE "user_id_seq" RESTART WITH 1`;
     await prisma.$queryRaw`ALTER SEQUENCE "ustad_id_seq" RESTART WITH 1`;
     await prisma.$queryRaw`ALTER SEQUENCE "booking_id_seq" RESTART WITH 1`;
-    await prisma.$queryRaw`ALTER SEQUENCE "history_id_seq" RESTART WITH 1`;
     await prisma.$queryRaw`ALTER SEQUENCE "user_profile_id_seq" RESTART WITH 1`;
 
     console.log('Data berhasil dihapus.');
 
+    const hashedPassword = await bcrypt.hash('123123', +process.env.BCRYPT_SALT);
     const users = await prisma.user.createMany({
         data: [
-            { name: 'User 1', email: 'user1@example.com', password: 'password1', isActive: true, role: 'user' },
-            { name: 'User 2', email: 'user2@example.com', password: 'password2', isActive: true, role: 'user' },
-            { name: 'Admin 1', email: 'admin1@example.com', password: 'password3', isActive: true, role: 'admin' },
-            { name: 'Ustad 1', email: 'ustad1@example.com', password: 'password4', isActive: true, role: 'ustad' },
-            { name: 'Ustad 2', email: 'ustad2@example.com', password: 'password5', isActive: true, role: 'ustad' }
+            { name: 'User 1', email: 'user1@example.com', password: hashedPassword, isActive: true, role: 'user' },
+            { name: 'User 2', email: 'user2@example.com', password: hashedPassword, isActive: true, role: 'user' },
+            { name: 'Admin 1', email: 'admin1@example.com', password: hashedPassword, isActive: true, role: 'admin' },
+            { name: 'Ustad 1', email: 'ustad1@example.com', password: hashedPassword, isActive: true, role: 'ustad' },
+            { name: 'Ustad 2', email: 'ustad2@example.com', password: hashedPassword, isActive: true, role: 'ustad' }
         ]
     });
 
@@ -71,24 +72,8 @@ async function main() {
         ]
     });
 
-
     console.log('Data booking berhasil di-seed.');
 
-    const bookingIds = await prisma.booking.findMany({
-        select: { id: true }
-    });
-
-    await prisma.history.createMany({
-        data: [
-            { bookingId: bookingIds[0].id },
-            { bookingId: bookingIds[1].id },
-            { bookingId: bookingIds[2].id },
-            { bookingId: bookingIds[3].id },
-            { bookingId: bookingIds[4].id }
-        ]
-    });
-
-    console.log('Data history berhasil di-seed.');
 }
 
 main()
