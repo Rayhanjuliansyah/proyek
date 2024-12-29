@@ -1,14 +1,15 @@
+require('dotenv').config();
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
 
 async function main() {
 
-    await prisma.history.deleteMany({});
-    await prisma.booking.deleteMany({});
-    await prisma.userProfile.deleteMany({});
-    await prisma.ustad.deleteMany({});
-    await prisma.user.deleteMany({});
+    await prisma.booking.deleteMany();
+    await prisma.userProfile.deleteMany();
+    await prisma.ustad.deleteMany();
+    await prisma.user.deleteMany();
 
     await prisma.$queryRaw`ALTER SEQUENCE "user_id_seq" RESTART WITH 1`;
     await prisma.$queryRaw`ALTER SEQUENCE "ustad_id_seq" RESTART WITH 1`;
@@ -36,12 +37,13 @@ async function main() {
 
     const ustads = await prisma.ustad.createMany({
         data: [
-            { name: 'Ustad 1', expertise: ['Fiqh', 'Hadith'], description: 'Expert in Fiqh and Hadith', hourlyRate: 50, availability: true, userId: userIds[3].id },
-            { name: 'Ustad 2', expertise: ['Quran', 'Akhlaq'], description: 'Expert in Quran and Akhlaq', hourlyRate: 60, availability: true, userId: userIds[4].id },
-            { name: 'Ustad 3', expertise: ['Fiqh', 'Akhlaq'], description: 'Expert in Fiqh and Akhlaq', hourlyRate: 55, availability: false, userId: userIds[0].id },
-            { name: 'Ustad 4', expertise: ['Hadith', 'Quran'], description: 'Expert in Hadith and Quran', hourlyRate: 65, availability: true, userId: userIds[1].id },
-            { name: 'Ustad 5', expertise: ['Fiqh', 'Quran'], description: 'Expert in Fiqh and Quran', hourlyRate: 70, availability: true, userId: userIds[2].id }
+            { name: 'Burhan', expertise: ['Fiqh', 'Hadith'], description: 'A highly knowledgeable scholar with in-depth expertise in Fiqh and Hadith, offering insightful guidance.', hourlyRate: 50, availability: true, userId: userIds[3].id },
+            { name: 'Juliansyah', expertise: ['Quran', 'Akhlaq'], description: 'A dedicated scholar specializing in Quranic studies and Akhlaq, providing profound spiritual and moral guidance.', hourlyRate: 60, availability: true, userId: userIds[4].id },
+            { name: 'Rayhan', expertise: ['Fiqh', 'Akhlaq'], description: 'An expert in Fiqh and Akhlaq, committed to delivering comprehensive understanding of Islamic jurisprudence and ethical teachings.', hourlyRate: 55, availability: false, userId: userIds[0].id },
+            { name: 'Panjul', expertise: ['Hadith', 'Quran'], description: 'A distinguished scholar with extensive knowledge of Hadith and Quran, offering detailed interpretations and wisdom.', hourlyRate: 65, availability: true, userId: userIds[1].id },
+            { name: 'Jono', expertise: ['Fiqh', 'Quran'], description: 'A proficient scholar with a deep understanding of both Fiqh and Quran, providing expert-level insights into Islamic teachings.', hourlyRate: 70, availability: true, userId: userIds[2].id }
         ]
+
     });
 
     console.log('Data ustad berhasil di-seed.');

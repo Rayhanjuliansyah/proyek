@@ -1,39 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, Star } from 'lucide-react';
+import axios from '../api/axios'; // Impor axios untuk melakukan permintaan ke backend
 
-const mockHistory = [
-  {
-    id: '1',
-    ustadName: 'Ustad A',
-    date: '2024-02-15T14:00:00',
-    sessionType: 'online',
-    rating: 5,
-    price: 100, // Tambahkan harga pada sesi
-  },
-  {
-    id: '2',
-    ustadName: 'Ustad B',
-    date: '2024-02-10T16:00:00',
-    sessionType: 'in-person',
-    rating: 4,
-    price: 150, // Tambahkan harga pada sesi
-  },
-];
+interface Session {
+  id: string;
+  ustadName: string;
+  date: string;
+  sessionType: 'online' | 'in-person';
+  rating: number;
+  price: number; // Tambahkan harga pada sesi
+}
 
 export const HistoryPage: React.FC = () => {
-  // State untuk menyimpan ID sesi yang dipilih
-  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const [history, setHistory] = useState<Session[]>([]); // State untuk menyimpan data dari API
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null); // State untuk menyimpan ID sesi yang dipilih
+  const [loading, setLoading] = useState<boolean>(true); // State untuk menampilkan loading
+  const [error, setError] = useState<string | null>(null); // State untuk menangani error
+
+  // Fungsi untuk mengambil data dari API
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get<Session[]>('/history'); // Ganti '/history' dengan endpoint API backend Anda
+        setHistory(response.data);
+      } catch (err: any) {
+        setError(err.response?.data?.message || 'Failed to fetch session history');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, []);
 
   // Fungsi untuk menangani klik pada sesi
   const handleSessionClick = (id: string) => {
     setSelectedSessionId((prevId) => (prevId === id ? null : id)); // Toggle detail sesi
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-6">Session History</h2>
       <div className="space-y-4">
-        {mockHistory.map((session) => (
+        {history.map((session) => (
           <div
             key={session.id}
             className="bg-white rounded-lg shadow p-6 cursor-pointer hover:bg-gray-50"

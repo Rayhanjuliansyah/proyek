@@ -1,15 +1,37 @@
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  isActive: boolean;
+  role: string;
+  userProfile: UserProfile[]; // Array of UserProfile
+}
+
+
+
+export interface UserProfile {
+  id: number;
+  userId: number;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  imageUrl: string;
+  isActive: boolean;
+}
+
 export interface Ustad {
   id: string;
   name: string;
-  phone: string;
-  specialization: string;
+  expertise: string[]; // Array of expertise strings
   description: string;
-  expertise: string[];
-  rating: number;
-  imageUrl: string;
   hourlyRate: number;
-  availability?: boolean; // Opsional
+  availability: boolean;
+  userId: number;
+  user: User; // Associated user data
 }
+
+
 
 
 export interface Booking {
@@ -27,10 +49,4 @@ export interface Message {
   receiverId: string;
   content: string;
   timestamp: string;
-}
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
 }

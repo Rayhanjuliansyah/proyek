@@ -3,7 +3,12 @@ const prisma = new PrismaClient();
 
 const getAllBookings = async (req, res) => {
     try {
-        const bookings = await prisma.booking.findMany();
+        const bookings = await prisma.booking.findMany({
+            include: {
+                user: true,
+                ustad: true,
+            }
+        });
         res.status(200).json({
             status: 'success',
             message: 'Bookings retrieved successfully',

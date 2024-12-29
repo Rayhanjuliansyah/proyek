@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,24 +8,17 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  name     String
-  email    String  @unique
-  password String
-  isActive Boolean @default(true)
-
+  id          Int           @id @default(autoincrement())
+  name        String
+  email       String        @unique
+  password    String
+  isActive    Boolean       @default(true)
   role        userRole      @default(user)
-  ustad       Ustad[]
   booking     Booking[]
   userProfile UserProfile[]
+  ustad       Ustad[]
 
   @@map("user")
-}
-
-enum userRole {
-  admin
-  ustad
-  user
 }
 
 model UserProfile {
@@ -42,23 +29,22 @@ model UserProfile {
   phone     String
   imageUrl  String?
   isActive  Boolean @default(true)
-
-  user User @relation(fields: [userId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
 
   @@map("user_profile")
 }
 
 model Ustad {
-  id           Int      @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   name         String
   expertise    String[]
   description  String
   hourlyRate   Float
   availability Boolean
   userId       Int
-
-  user    User      @relation(fields: [userId], references: [id])
-  booking Booking[]
+  imageUrl     String?
+  booking      Booking[]
+  user         User      @relation(fields: [userId], references: [id])
 
   @@map("ustad")
 }
@@ -67,17 +53,22 @@ model Booking {
   id          Int           @id @default(autoincrement())
   userId      Int
   ustadId     Int
-  bookingDate DateTime      @default(now())
-  eventDate   DateTime?
   duration    String
   location    String
   price       Float
   status      bookingStatus @default(pending)
-
-  user  User  @relation(fields: [userId], references: [id])
-  ustad Ustad @relation(fields: [ustadId], references: [id])
+  bookingDate DateTime      @default(now())
+  eventDate   DateTime?
+  user        User          @relation(fields: [userId], references: [id])
+  ustad       Ustad         @relation(fields: [ustadId], references: [id])
 
   @@map("booking")
+}
+
+enum userRole {
+  admin
+  ustad
+  user
 }
 
 enum bookingStatus {

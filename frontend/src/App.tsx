@@ -8,7 +8,7 @@ import { SettingsPage } from './pages/Setting';
 import { ChatWindow } from './components/ChatWindow';
 import { BookingForm } from './components/BookingForm';
 import { Message } from './types';
-import { UstadPage } from './pages/Ustad';
+import { UstadPage } from './pages/Ustad'; // Impor tanpa kurung kurawal (karena ekspor default)
 
 function App() {
   const [selectedUstadId, setSelectedUstadId] = useState<string | null>(null);
@@ -66,7 +66,7 @@ function App() {
       case 'settings':
         return <SettingsPage />;
       case 'ustad':
-        return <UstadPage />;
+        return <UstadPage />; // Render UstadPage when currentPage is 'ustad'
       default:
         return <HomePage onBook={handleBook} onChat={handleChat} />;
     }

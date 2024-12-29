@@ -4,7 +4,15 @@ const prisma = new PrismaClient();
 
 const getAllUstads = async (req, res) => {
     try {
-        const ustads = await prisma.ustad.findMany();
+        const ustads = await prisma.ustad.findMany({
+            include: {
+                user: {
+                    include:{
+                        userProfile : true
+                    }
+                }
+            }
+        });
         res.status(200).json({
             status: 'success',
             message: 'Ustads retrieved successfully',
@@ -60,7 +68,7 @@ const getUstadById = async (req, res) => {
 };
 
 const createUstad = async (req, res) => {
-    const { userId, hourlyRate, expertise, description } = req.body;
+    const { name, userId, hourlyRate, expertise, description,availability } = req.body;
 
     if (!userId || !hourlyRate || !expertise || !description) {
         return res.status(400).json({
@@ -73,10 +81,12 @@ const createUstad = async (req, res) => {
 
         const ustad = await prisma.ustad.create({
             data: {
+                name: name,
                 userId: parseInt(userId),
                 hourlyRate: parseFloat(hourlyRate),
                 expertise: expertise,
-                description: description
+                description: description,
+                availability:availability || false
             }
         });
 
@@ -87,6 +97,7 @@ const createUstad = async (req, res) => {
         });
 
     } catch (error) {
+        console.log(error.message)
         res.status(500).json({
             status: 'error',
             message: 'Internal Server Error',
@@ -97,7 +108,7 @@ const createUstad = async (req, res) => {
 
 const updateUstad = async (req, res) => {
     const ustadId = req.params.id;
-    const { hourlyRate, expertise, description } = req.body;
+    const { hourlyRate, expertise, description, availability } = req.body;
 
     if (!hourlyRate || !expertise || !description) {
         return res.status(400).json({
@@ -116,6 +127,7 @@ const updateUstad = async (req, res) => {
                 hourlyRate: parseFloat(hourlyRate),
                 expertise: expertise,
                 description: description,
+                availability:availability || false
             }
         });
 
