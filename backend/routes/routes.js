@@ -27,7 +27,8 @@ const {
     getBookingById,
     createBooking,
     updateBooking,
-    deleteBooking
+    deleteBooking,
+    getBookingByuserId
 } = require('../controllers/bookingController');
 
 
@@ -52,6 +53,7 @@ routes.put('/ustads/:id/status', activeUstad);
 
 routes.get('/bookings', getAllBookings);
 routes.get('/bookings/:id', getBookingById);
+routes.get('/bookings/user/:id', getBookingByuserId);
 routes.post('/bookings', createBooking);
 routes.put('/bookings/:id', updateBooking);
 routes.delete('/bookings/:id', deleteBooking);

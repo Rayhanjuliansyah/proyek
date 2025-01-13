@@ -54,11 +54,11 @@ async function main() {
 
     await prisma.userProfile.createMany({
         data: [
-            { userId: userIds[0].id, firstName: 'User 1', lastName: 'Lastname 1', phone: '1234567891', imageUrl: 'https://example.com/image1.jpg', isActive: true },
-            { userId: userIds[1].id, firstName: 'User 2', lastName: 'Lastname 2', phone: '1234567892', imageUrl: 'https://example.com/image2.jpg', isActive: true },
-            { userId: userIds[2].id, firstName: 'Admin 1', lastName: 'Lastname 3', phone: '1234567893', imageUrl: 'https://example.com/image3.jpg', isActive: true },
-            { userId: userIds[3].id, firstName: 'Ustad 1', lastName: 'Lastname 4', phone: '1234567894', imageUrl: 'https://example.com/image4.jpg', isActive: true },
-            { userId: userIds[4].id, firstName: 'Ustad 2', lastName: 'Lastname 5', phone: '1234567895', imageUrl: 'https://example.com/image5.jpg', isActive: true }
+            { userId: userIds[0].id, firstName: 'User 1', lastName: 'Lastname 1', phone: '1234567891', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true },
+            { userId: userIds[1].id, firstName: 'User 2', lastName: 'Lastname 2', phone: '1234567892', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true },
+            { userId: userIds[2].id, firstName: 'Admin 1', lastName: 'Lastname 3', phone: '1234567893', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true },
+            { userId: userIds[3].id, firstName: 'Ustad 1', lastName: 'Lastname 4', phone: '1234567894', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true },
+            { userId: userIds[4].id, firstName: 'Ustad 2', lastName: 'Lastname 5', phone: '1234567895', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true }
         ]
     });
 

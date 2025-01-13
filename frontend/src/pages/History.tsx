@@ -1,94 +1,147 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, Star } from 'lucide-react';
-import axios from '../api/axios'; // Impor axios untuk melakukan permintaan ke backend
-
-interface Session {
-  id: string;
-  ustadName: string;
-  date: string;
-  sessionType: 'online' | 'in-person';
-  rating: number;
-  price: number; // Tambahkan harga pada sesi
-}
+import { Calendar, Clock, MapPin, DollarSign, User as UserIcon } from 'lucide-react';
+import axiosInstance from '../api/axios';
+import { Booking } from '../types';
 
 export const HistoryPage: React.FC = () => {
-  const [history, setHistory] = useState<Session[]>([]); // State untuk menyimpan data dari API
-  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null); // State untuk menyimpan ID sesi yang dipilih
-  const [loading, setLoading] = useState<boolean>(true); // State untuk menampilkan loading
-  const [error, setError] = useState<string | null>(null); // State untuk menangani error
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Fungsi untuk mengambil data dari API
-  useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get<Session[]>('/history'); // Ganti '/history' dengan endpoint API backend Anda
-        setHistory(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'Failed to fetch session history');
-        console.error(err);
-      } finally {
-        setLoading(false);
+  const fetchBookings = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get('/bookings');
+      console.log('API Response:', response.data);
+  
+      if (response.data && Array.isArray(response.data.data)) {
+        const filteredBookings = response.data.data.filter(
+          (booking: Booking) => booking.status === 'completed' || booking.status === 'rejected'
+        );
+        setBookings(filteredBookings);
+      } else {
+        throw new Error('Unexpected response format from API');
       }
-    };
-
-    fetchHistory();
-  }, []);
-
-  // Fungsi untuk menangani klik pada sesi
-  const handleSessionClick = (id: string) => {
-    setSelectedSessionId((prevId) => (prevId === id ? null : id)); // Toggle detail sesi
+    } catch (err: any) {
+      console.error('Error fetching bookings:', err);
+      setError(err?.response?.data?.message || 'Failed to fetch bookings');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    fetchBookings();
+  }, []);
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  const handleBookingClick = (id: number) => {
+    setSelectedBookingId((prevId) => (prevId === id ? null : id));
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="text-red-600">Error: {error}</div>;
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-6">Session History</h2>
+      <h2 className="text-2xl font-semibold mb-6">My Bookings</h2>
       <div className="space-y-4">
-        {history.map((session) => (
-          <div
-            key={session.id}
-            className="bg-white rounded-lg shadow p-6 cursor-pointer hover:bg-gray-50"
-            onClick={() => handleSessionClick(session.id)} // Menangani klik
-          >
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold">{session.ustadName}</h3>
-              <div className="flex items-center space-x-2 text-gray-600">
-                <Calendar className="w-4 h-4" />
-                <span>{new Date(session.date).toLocaleDateString()}</span>
-                <Clock className="w-4 h-4 ml-2" />
-                <span>{new Date(session.date).toLocaleTimeString()}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                {Array.from({ length: session.rating }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-5 h-5 text-yellow-400 fill-current"
-                  />
-                ))}
-              </div>
-
-              {/* Menampilkan detail sesi jika sesi ini dipilih */}
-              {selectedSessionId === session.id && (
-                <div className="mt-4 p-4 border-t-2 border-gray-200">
-                  <h4 className="text-md font-semibold">Session Details:</h4>
-                  <p><strong>Session Type:</strong> {session.sessionType}</p>
-                  <p><strong>Date:</strong> {new Date(session.date).toLocaleDateString()}</p>
-                  <p><strong>Time:</strong> {new Date(session.date).toLocaleTimeString()}</p>
-                  <p><strong>Price:</strong> ${session.price}</p> {/* Menambahkan harga */}
-                </div>
-              )}
-            </div>
-          </div>
+        {bookings.map((booking) => (
+          <BookingCard
+            key={booking.id}
+            booking={booking}
+            isSelected={selectedBookingId === booking.id}
+            onClick={() => handleBookingClick(booking.id)}
+          />
         ))}
       </div>
+    </div>
+  );
+};
+
+interface BookingCardProps {
+  booking: Booking;
+  isSelected: boolean;
+  onClick: () => void;
+}
+
+const BookingCard: React.FC<BookingCardProps> = ({ booking, isSelected, onClick }) => {
+  return (
+    <div
+      className="bg-white rounded-lg shadow p-6 cursor-pointer hover:bg-gray-50"
+      onClick={onClick}
+    >
+      <div className="flex justify-between items-start">
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2">
+            <UserIcon className="w-5 h-5 text-gray-400" />
+            <h3 className="text-lg font-semibold">Ustad: {booking.ustad.name}</h3>
+          </div>
+          <div className="flex items-center space-x-2 text-gray-600">
+            <Calendar className="w-4 h-4" />
+            <span>{new Date(booking.eventDate).toLocaleDateString()}</span>
+            <Clock className="w-4 h-4 ml-2" />
+            <span>{new Date(booking.eventDate).toLocaleTimeString()}</span>
+          </div>
+          <div className="flex items-center space-x-2 text-gray-600">
+            <MapPin className="w-4 h-4" />
+            <span>{booking.location}</span>
+          </div>
+        </div>
+        <span
+          className={`px-3 py-1 rounded-full text-sm ${
+            booking.status === 'completed'
+              ? 'bg-green-100 text-green-800'
+              : booking.status === 'accepted'
+              ? 'bg-blue-100 text-blue-800'
+              : booking.status === 'rejected'
+              ? 'bg-red-100 text-red-800'
+              : 'bg-yellow-100 text-yellow-800'
+          }`}
+        >
+          {booking.status}
+        </span>
+      </div>
+
+      {isSelected && (
+        <div className="mt-4 p-4 border-t-2 border-gray-200">
+          <h4 className="text-md font-semibold">Booking Details:</h4>
+          <p>
+            <strong>Booking Date:</strong>{' '}
+            {new Date(booking.bookingDate).toLocaleDateString()}
+          </p>
+          <p>
+            <strong>Event Date:</strong>{' '}
+            {new Date(booking.eventDate).toLocaleDateString()}
+          </p>
+          <p>
+            <strong>Event Time:</strong>{' '}
+            {new Date(booking.eventDate).toLocaleTimeString()}
+          </p>
+          <p>
+            <strong>Duration:</strong> {booking.duration} hour(s)
+          </p>
+          <p>
+            <strong>Location:</strong> {booking.location}
+          </p>
+          <div className="mt-2">
+            <h5 className="font-semibold">Ustad Details:</h5>
+            <p>
+              <strong>Name:</strong> {booking.ustad.name}
+            </p>
+            <p>
+              <strong>Expertise:</strong> {booking.ustad.expertise.join(', ')}
+            </p>
+            {/* <p>{booking.ustad.description}</p> */}
+          </div>
+          <div className="flex items-center space-x-2 text-gray-600 mt-2">
+            <DollarSign className="w-5 h-5 text-gray-400" />
+            <span>
+              <strong>Price:</strong> ${booking.price}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

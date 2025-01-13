@@ -15,7 +15,7 @@ export const UstadCard: React.FC<UstadCardProps> = ({ ustad, onSelect }) => {
       <div className="flex items-start space-x-4">
         {/* Tambahkan fallback jika `imageUrl` kosong */}
         <img
-          src={ustad.user.userProfile?.[0]?.imageUrl || 'https://via.placeholder.com/96'} // Placeholder image jika `imageUrl` tidak tersedia
+          src={ustad.user.userProfile?.[0]?.imageUrl || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'} // Placeholder image jika `imageUrl` tidak tersedia
           alt={ustad.name}
           className="w-24 h-24 rounded-full object-cover"
         />
@@ -38,7 +38,7 @@ export const UstadCard: React.FC<UstadCardProps> = ({ ustad, onSelect }) => {
           <p className="mt-2 text-gray-800 font-semibold">
             ${ustad.hourlyRate}/hour
           </p>
-          <p className="mt-2">
+          {/* <p className="mt-2">
             Availability:{' '}
             <span
               className={
@@ -49,7 +49,7 @@ export const UstadCard: React.FC<UstadCardProps> = ({ ustad, onSelect }) => {
             >
               {ustad.availability ? 'Available' : 'Unavailable'}
             </span>
-          </p>
+          </p> */}
         </div>
       </div>
     </div>
