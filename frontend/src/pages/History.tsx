@@ -2,24 +2,48 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, DollarSign, User as UserIcon } from 'lucide-react';
 import axiosInstance from '../api/axios';
 import { Booking } from '../types';
+import { jwtDecode } from 'jwt-decode';
+
 
 export const HistoryPage: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const token = localStorage.getItem('token'); // or wherever your token is stored
+  if (!token) throw new Error('No token found');
+  const decodedToken = jwtDecode<{ 
+    id: number,
+    role: string
+  }>(token);
+  const userIdLogin = decodedToken.id;
+  const userRole = decodedToken.role
 
   const fetchBookings = async () => {
     try {
       setLoading(true);
       const response = await axiosInstance.get('/bookings');
       console.log('API Response:', response.data);
-  
+
       if (response.data && Array.isArray(response.data.data)) {
-        const filteredBookings = response.data.data.filter(
-          (booking: Booking) => booking.status === 'completed' || booking.status === 'rejected'
-        );
+        let filteredBookings;
+
+        if (userRole === 'admin') {
+          filteredBookings = response.data.data;
+        } else if (userRole === 'user') {
+          filteredBookings = response.data.data.filter(
+            (booking: Booking) => booking.userId === userIdLogin
+          );
+        } else if (userRole === 'ustad') {
+          filteredBookings = response.data.data.filter(
+            (booking: Booking) =>
+              (booking.status === 'completed' || booking.status === 'rejected') &&
+              booking.ustadId === userIdLogin
+          );
+        }
+
         setBookings(filteredBookings);
+
       } else {
         throw new Error('Unexpected response format from API');
       }

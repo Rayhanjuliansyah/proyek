@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Home, User, Settings, Calendar, History, Music, Users } from 'lucide-react'; // Tambahkan ikon "Users" atau ikon lain yang relevan
+import React from 'react';
+import { Home, User, Settings, Calendar, History, Music, Users, ArrowLeftCircle } from 'lucide-react'; // Tambahkan ikon "Users" atau ikon lain yang relevan
 
 interface NavItem {
   label: string;
@@ -10,6 +10,7 @@ interface NavItem {
 interface SidebarProps {
   currentPage: string;
   onNavigate: (path: string) => void;
+  userRole: 'user' | 'admin' | 'ustad' |null; // Menerima role dari props
 }
 
 const navItems: NavItem[] = [
@@ -18,10 +19,37 @@ const navItems: NavItem[] = [
   { label: 'Booking List', icon: <Calendar className="w-5 h-5" />, path: 'bookings' },
   { label: 'History', icon: <History className="w-5 h-5" />, path: 'history' },
   { label: 'Settings', icon: <Settings className="w-5 h-5" />, path: 'settings' },
-  { label: 'Ustad', icon: <Users className="w-5 h-5" />, path: 'ustad' }, // Tambahkan menu Ustad di sini
+  { label: 'Ustad', icon: <Users className="w-5 h-5" />, path: 'ustad' }, // Menu Ustad di sini
+  { label: 'Logout', icon: <ArrowLeftCircle className="w-5 h-5 " />, path: 'logout' },
 ];
 
-export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate, userRole }) => {
+  // Filter navItems untuk menampilkan 'Ustad' hanya jika role adalah 'admin'
+  const filteredNavItems = userRole === 'admin'
+  ? navItems // Tampilkan semua item untuk admin
+  : navItems.filter(item => {
+      if (!userRole) {
+        return false; 
+      }
+
+            if (item.label === 'Booking List' && userRole !== 'ustad' ) {
+        return false;
+      }
+
+      if (item.label === 'Ustad' && userRole === 'ustad') {
+        return false;
+      }
+
+      if (item.label === 'Ustad'  && userRole === 'user') {
+        return false;
+      }
+
+
+      return true; 
+  });
+
+
+
   return (
     <div className="w-64 bg-white h-screen fixed left-0 top-0 shadow-sm">
       <div className="p-4 border-b">
@@ -32,7 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
       </div>
       <nav className="p-4">
         <ul className="space-y-2">
-          {navItems.map((item) => (
+          {filteredNavItems.map((item) => (
             <li key={item.path}>
               <button
                 onClick={() => onNavigate(item.path)}
@@ -49,6 +77,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
           ))}
         </ul>
       </nav>
+      {/* <h4 className='text-sm text-center text-gray-600'>{userRole}</h4> */}
     </div>
   );
 };

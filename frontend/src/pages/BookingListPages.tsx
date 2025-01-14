@@ -2,22 +2,48 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, DollarSign, User as UserIcon } from 'lucide-react';
 import axiosInstance from '../api/axios';
 import { Booking } from '../types';
+import { jwtDecode } from 'jwt-decode';
+
 
 export const BookingListPage: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+   const token = localStorage.getItem('token'); // or wherever your token is stored
+    if (!token) throw new Error('No token found');
+    const decodedToken = jwtDecode<{ 
+      id: number,
+      role: string
+    }>(token);
+    const userIdLogin = decodedToken.id;
+    const userRole = decodedToken.role
 
   const fetchBookings = async () => {
     try {
       setLoading(true);
       const response = await axiosInstance.get('/bookings');
       if (response.data && Array.isArray(response.data.data)) {
-        const filteredBookings = response.data.data.filter(
-          (booking: Booking) => booking.status === 'pending' || booking.status === 'accepted'
-        );
-        setBookings(filteredBookings);
+        let filteredBookings;
+
+        if (userRole === 'admin') {
+          // No filtering for admin, return all bookings
+          filteredBookings = response.data.data;
+        } else if (userRole === 'user') {
+          // Filter for user based on userId
+          filteredBookings = response.data.data.filter(
+            (booking: Booking) => booking.userId === userIdLogin
+          );
+        } else if (userRole === 'ustad') {
+          // Filter for ustad based on status and userId
+          filteredBookings = response.data.data.filter(
+            (booking: Booking) =>
+              (booking.status === 'completed' || booking.status === 'rejected') &&
+              booking.ustadId === userIdLogin
+          );
+        }
+
+          setBookings(filteredBookings);
         
       } else {
         throw new Error('Unexpected response format from API');

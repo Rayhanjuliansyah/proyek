@@ -61,15 +61,8 @@ model Booking {
   eventDate   DateTime?
   user        User          @relation(fields: [userId], references: [id])
   ustad       Ustad         @relation(fields: [ustadId], references: [id])
-  History     History[]
 
   @@map("booking")
-}
-
-model History {
-  id        Int     @id @default(autoincrement())
-  bookingId Int
-  booking   Booking @relation(fields: [bookingId], references: [id])
 }
 
 enum userRole {

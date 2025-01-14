@@ -40,8 +40,8 @@ async function main() {
             { name: 'Burhan', expertise: ['Fiqh', 'Hadith'], description: 'A highly knowledgeable scholar with in-depth expertise in Fiqh and Hadith, offering insightful guidance.', hourlyRate: 50, availability: true, userId: userIds[3].id },
             { name: 'Juliansyah', expertise: ['Quran', 'Akhlaq'], description: 'A dedicated scholar specializing in Quranic studies and Akhlaq, providing profound spiritual and moral guidance.', hourlyRate: 60, availability: true, userId: userIds[4].id },
             { name: 'Rayhan', expertise: ['Fiqh', 'Akhlaq'], description: 'An expert in Fiqh and Akhlaq, committed to delivering comprehensive understanding of Islamic jurisprudence and ethical teachings.', hourlyRate: 55, availability: false, userId: userIds[0].id },
-            { name: 'Panjul', expertise: ['Hadith', 'Quran'], description: 'A distinguished scholar with extensive knowledge of Hadith and Quran, offering detailed interpretations and wisdom.', hourlyRate: 65, availability: true, userId: userIds[1].id },
-            { name: 'Jono', expertise: ['Fiqh', 'Quran'], description: 'A proficient scholar with a deep understanding of both Fiqh and Quran, providing expert-level insights into Islamic teachings.', hourlyRate: 70, availability: true, userId: userIds[2].id }
+            { name: 'Panjul', expertise: ['Hadith', 'Quran'], description: 'A distinguished scholar with extensive knowledge of Hadith and Quran, offering detailed interpretations and wisdom.', hourlyRate: 65, availability: true, userId: userIds[3].id },
+            { name: 'Jono', expertise: ['Fiqh', 'Quran'], description: 'A proficient scholar with a deep understanding of both Fiqh and Quran, providing expert-level insights into Islamic teachings.', hourlyRate: 70, availability: true, userId: userIds[4].id }
         ]
 
     });
@@ -54,11 +54,11 @@ async function main() {
 
     await prisma.userProfile.createMany({
         data: [
-            { userId: userIds[0].id, firstName: 'User 1', lastName: 'Lastname 1', phone: '1234567891', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true },
-            { userId: userIds[1].id, firstName: 'User 2', lastName: 'Lastname 2', phone: '1234567892', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true },
-            { userId: userIds[2].id, firstName: 'Admin 1', lastName: 'Lastname 3', phone: '1234567893', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true },
-            { userId: userIds[3].id, firstName: 'Ustad 1', lastName: 'Lastname 4', phone: '1234567894', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true },
-            { userId: userIds[4].id, firstName: 'Ustad 2', lastName: 'Lastname 5', phone: '1234567895', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true }
+            { userId: userIds[0].id, firstName: 'User', lastName: 'Pertama', phone: '1234567891', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true },
+            { userId: userIds[1].id, firstName: 'User', lastName: 'Kedua', phone: '1234567892', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true },
+            { userId: userIds[2].id, firstName: 'Admin', lastName: 'Pertama', phone: '1234567893', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true },
+            { userId: userIds[3].id, firstName: 'Ustad', lastName: 'Pertama', phone: '1234567894', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true },
+            { userId: userIds[4].id, firstName: 'Ustad', lastName: 'Kedua', phone: '1234567895', imageUrl: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg', isActive: true }
         ]
     });
 
@@ -66,11 +66,14 @@ async function main() {
 
     const bookings = await prisma.booking.createMany({
         data: [
-            { userId: userIds[0].id, ustadId: ustadIds[0].id, bookingDate: new Date('2024-12-01T00:00:00.000Z'), eventDate: new Date('2024-12-01T10:00:00.000Z'), duration: '1', location: 'Location 1', price: 50, status: 'pending' },
-            { userId: userIds[1].id, ustadId: ustadIds[1].id, bookingDate: new Date('2024-12-02T00:00:00.000Z'), eventDate: new Date('2024-12-01T11:00:00.000Z'), duration: '2', location: 'Location 2', price: 60, status: 'completed' },
-            { userId: userIds[2].id, ustadId: ustadIds[2].id, bookingDate: new Date('2024-12-03T00:00:00.000Z'), eventDate: new Date('2024-12-01T09:00:00.000Z'), duration: '1', location: 'Location 3', price: 55, status: 'accepted' },
-            { userId: userIds[3].id, ustadId: ustadIds[3].id, bookingDate: new Date('2024-12-04T00:00:00.000Z'), eventDate: new Date('2024-12-01T12:00:00.000Z'), duration: '1', location: 'Location 4', price: 65, status: 'rejected' },
-            { userId: userIds[4].id, ustadId: ustadIds[4].id, bookingDate: new Date('2024-12-05T00:00:00.000Z'), eventDate: new Date('2024-12-01T13:00:00.000Z'), duration: '1', location: 'Location 5', price: 70, status: 'pending' }
+            { userId: userIds[0].id, ustadId: ustadIds[3].id, bookingDate: new Date('2024-12-01T00:00:00.000Z'), eventDate: new Date('2024-12-01T10:00:00.000Z'), duration: '1', location: 'Location 1', price: 50, status: 'pending' },
+            { userId: userIds[0].id, ustadId: ustadIds[3].id, bookingDate: new Date('2024-12-02T00:00:00.000Z'), eventDate: new Date('2024-12-01T11:00:00.000Z'), duration: '2', location: 'Location 2', price: 60, status: 'completed' },
+            { userId: userIds[0].id, ustadId: ustadIds[3].id, bookingDate: new Date('2024-12-03T00:00:00.000Z'), eventDate: new Date('2024-12-01T09:00:00.000Z'), duration: '1', location: 'Location 3', price: 55, status: 'accepted' },
+            { userId: userIds[0].id, ustadId: ustadIds[3].id, bookingDate: new Date('2024-12-04T00:00:00.000Z'), eventDate: new Date('2024-12-01T12:00:00.000Z'), duration: '1', location: 'Location 4', price: 65, status: 'rejected' },
+            { userId: userIds[1].id, ustadId: ustadIds[4].id, bookingDate: new Date('2024-12-05T00:00:00.000Z'), eventDate: new Date('2024-12-01T13:00:00.000Z'), duration: '1', location: 'Location 5', price: 70, status: 'pending' },
+            { userId: userIds[1].id, ustadId: ustadIds[4].id, bookingDate: new Date('2024-12-05T00:00:00.000Z'), eventDate: new Date('2024-12-01T13:00:00.000Z'), duration: '1', location: 'Location 5', price: 70, status: 'completed' },
+            { userId: userIds[1].id, ustadId: ustadIds[4].id, bookingDate: new Date('2024-12-05T00:00:00.000Z'), eventDate: new Date('2024-12-01T13:00:00.000Z'), duration: '1', location: 'Location 5', price: 70, status: 'accepted' },
+            { userId: userIds[1].id, ustadId: ustadIds[4].id, bookingDate: new Date('2024-12-05T00:00:00.000Z'), eventDate: new Date('2024-12-01T13:00:00.000Z'), duration: '1', location: 'Location 5', price: 70, status: 'rejected' }
         ]
     });
 

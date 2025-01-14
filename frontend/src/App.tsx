@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MainLayout } from './components/layout/MainLayout';
+import { LoginPage } from './pages/LoginPages';
 import { HomePage } from './pages/HomePages';
 import { ProfilePage } from './pages/Profilepages';
 import { BookingListPage } from './pages/BookingListPages';
@@ -8,7 +9,8 @@ import { SettingsPage } from './pages/Setting';
 import { ChatWindow } from './components/ChatWindow';
 import { BookingForm } from './components/BookingForm';
 import { Message } from './types';
-import { UstadPage } from './pages/Ustad'; // Impor tanpa kurung kurawal (karena ekspor default)
+import { UstadPage } from './pages/Ustad';
+import axiosInstance from './api/axios';
 
 function App() {
   const [selectedUstadId, setSelectedUstadId] = useState<string | null>(null);
@@ -16,6 +18,47 @@ function App() {
   const [showChat, setShowChat] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentPage, setCurrentPage] = useState('home');
+  const [user, setUser] = useState<{
+    name: string;
+    email: string;
+    role: 'user' | 'admin' | 'ustad' | null;
+  } | null>(null);
+
+  const handleLogin = async (email: string, password: string) => {
+    try {
+      const response = await axiosInstance.post('/login', {
+        email,
+        password,
+      });
+
+      if (response.status === 200) {
+        const { name, email, role } = response.data.data;
+        setUser({ name, email, role });
+        localStorage.setItem('token', response.data.data.token);
+        setCurrentPage('home');
+      }
+
+      // console.log('Login response:', response);
+      
+      if (response.data.data.role === 'ustad') {
+        setCurrentPage('bookings');
+      }
+
+      if (response.data.data.role === 'admin') {
+        setCurrentPage('ustad');
+      }
+
+    } catch (error) {
+      console.error('Login failed:', error);
+      alert('Terjadi kesalahan saat login. Coba lagi.');
+    }
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('token');
+    setCurrentPage('login'); // Redirect ke login setelah logout
+  };
 
   const handleBook = (ustadId: string) => {
     setSelectedUstadId(ustadId);
@@ -48,12 +91,19 @@ function App() {
 
   const handleNavigate = (path: string) => {
     setCurrentPage(path);
-    // Close chat and booking windows when navigating to a new page
     setShowChat(false);
     setShowBooking(false);
   };
 
+  if (!user) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
+
   const renderPage = () => {
+    // if (user.role === 'admin' && currentPage === 'ustad') {
+    //   return <UstadPage />;
+    // }
+
     switch (currentPage) {
       case 'home':
         return <HomePage onBook={handleBook} onChat={handleChat} />;
@@ -66,20 +116,20 @@ function App() {
       case 'settings':
         return <SettingsPage />;
       case 'ustad':
-        return <UstadPage />; // Render UstadPage when currentPage is 'ustad'
+        return <UstadPage />;
+      case 'logout':
+        handleLogout();
+        return <LoginPage onLogin={handleLogin} />;
       default:
         return <HomePage onBook={handleBook} onChat={handleChat} />;
     }
   };
 
   return (
-    <MainLayout currentPage={currentPage} onNavigate={handleNavigate}>
+    <MainLayout currentPage={currentPage} onNavigate={handleNavigate} userRole={user?.role}>
       <div className="flex gap-8">
-        <div className="flex-1">
-          {renderPage()}
-        </div>
+        <div className="flex-1">{renderPage()}</div>
 
-        {/* Render Chat Window if showChat is true */}
         {showChat && selectedUstadId && (
           <div className="w-96">
             <ChatWindow
@@ -91,7 +141,6 @@ function App() {
         )}
       </div>
 
-      {/* Render Booking Form if showBooking is true */}
       {showBooking && selectedUstadId && (
         <BookingForm
           ustadId={selectedUstadId}
